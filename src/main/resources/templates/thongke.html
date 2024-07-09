@@ -1,0 +1,1324 @@
+    <!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Thống kê</title>
+        <!-- Bootstrap CSS -->
+        
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <!-- Link to Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- Link to Bootstrap Datepicker CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+        <!-- Link to Bootstrap Datepicker JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+          />
+        <link type="text/css" href="/css/navBar.css" rel="stylesheet" />
+
+        <script>
+            window.onload = function () {
+                // Xuất "hello" ra console log khi trang được tải
+                loadDataTVKhoa();
+                loadXuLyData();
+            };
+            
+            function validateDates() {
+                var tuNgayInput = document.getElementById('tu-ngay-TB');
+                var denNgayInput = document.getElementById('den-ngay-TB');
+                var tuNgay = new Date(tuNgayInput.value);
+                var denNgay = new Date(denNgayInput.value);
+                console.log(tuNgayInput.value+" "+denNgay)
+
+                if (tuNgay && denNgay) {
+                    if (tuNgay < denNgay) {
+                        var table = document.getElementById('table-content-tb-tg');
+                        var count = 1;
+                        table.innerHTML = '';
+                        $.ajax({
+                            url: '/thong-ke/thiet-bi/khoang',
+                            type: 'GET',
+                            data: {
+                                date1: tuNgay.toISOString(), // Convert date to ISO string format
+                                date2: denNgay.toISOString()
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                console.log('Success:', response);
+                                // Clear existing table data
+                                $('#table-content-tb-tg').empty();
+                                for (var i = 0; i < response.length; i++) {
+                                    $('#table-content-tb-tg').append(
+                                        `<tr>
+                                            <td>${count}</td>
+                                            <td>${response[i][1]}</td>
+                                            <td>${response[i][0]}</td>
+                                            <td>${response[i][2]}</td>
+                                        </tr>`
+                                    );
+                                    count += 1;
+                                }
+                                document.getElementById('tongmuon').innerHTML = count - 1+" thiết bị";
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                                // Handle error here
+                            }
+                        });
+                    } else {
+                        console.error('Tu Ngay must be before Den Ngay.');
+                    }
+                } else {
+                    console.error('Invalid date values.');
+                }
+            }
+            
+            function validateDates() {
+                var tuNgayInput = document.getElementById('tu-ngay-TB');
+                var denNgayInput = document.getElementById('den-ngay-TB');
+                var tuNgay = new Date(tuNgayInput.value);
+                var denNgay = new Date(denNgayInput.value);
+                console.log(tuNgayInput.value+" "+denNgay)
+
+                if (tuNgay && denNgay) {
+                    if (tuNgay < denNgay) {
+                        var table = document.getElementById('table-content-tb-tg');
+                        var count = 1;
+                        table.innerHTML = '';
+                        $.ajax({
+                            url: '/thong-ke/thiet-bi/khoang',
+                            type: 'GET',
+                            data: {
+                                date1: tuNgay.toISOString(), // Convert date to ISO string format
+                                date2: denNgay.toISOString()
+                            },
+                            dataType: 'json',
+                            success: function(response) {
+                                console.log('Success:', response);
+                                // Clear existing table data
+                                $('#table-content-tb-tg').empty();
+                                for (var i = 0; i < response.length; i++) {
+                                    $('#table-content-tb-tg').append(
+                                        `<tr>
+                                            <td>${count}</td>
+                                            <td>${response[i][1]}</td>
+                                            <td>${response[i][0]}</td>
+                                            <td>${response[i][2]}</td>
+                                        </tr>`
+                                    );
+                                    count += 1;
+                                }
+                                document.getElementById('tongmuon').innerHTML = count - 1+" thiết bị";
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                                // Handle error here
+                            }
+                        });
+                    } else {
+                        console.error('Tu Ngay must be before Den Ngay.');
+                    }
+                } else {
+                    console.error('Invalid date values.');
+                }
+            }
+
+
+            function typeThongke(c) {
+                var type = c.value;
+                if (type == "khoa") {
+                    document.getElementById("day-month-year").classList.add('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("menutv").classList.add('d-none');
+                    loadDataTVKhoa();
+                } else if (type == "nganh") {
+                    document.getElementById("day-month-year").classList.add('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("menutv").classList.add('d-none');
+                    loadDataTVNganh()
+                } else if (type == "thoigian") {
+                    //document.getElementById("day-month-year").classList.remove('d-none');
+                    //document.getElementById("fromtodate").classList.remove('d-none');
+                    var oldChart = document.getElementById("myChart");
+                    oldChart.parentNode.removeChild(oldChart);
+
+                    var canvas = document.createElement('canvas');
+                    canvas.id = 'myChart';
+                    canvas.style.width = '400px';
+                    canvas.style.height = '400px';
+                    canvas.style.display = 'block';
+                    canvas.style.boxSizing = 'border-box';
+                    canvas.width = 400;
+                    canvas.height = 400;
+
+                    // Lấy phần tử div có id là "thanh-vien"
+                    var parentDiv = document.getElementById('thanh-vien');
+
+                    // Chèn phần tử canvas vào phần tử div
+                    parentDiv.appendChild(canvas);
+                    document.getElementById("menutv").classList.remove('d-none');
+                    document.getElementById("tongvao").innerHTML = "---";
+                } else if(type=="tenthietbi") {
+                    document.getElementById("device-name").classList.remove('d-none');
+                    document.getElementById("fromtodateTB").classList.add('d-none');
+                    document.getElementById("tb-ten").classList.remove('d-none');
+                    document.getElementById("tb-tg").classList.add('d-none');
+                } else if(type=="tgthietbi") {
+                    document.getElementById("device-name").classList.add('d-none');
+                    document.getElementById("fromtodateTB").classList.remove('d-none');
+                    document.getElementById("tb-ten").classList.add('d-none');
+                    document.getElementById("tb-tg").classList.remove('d-none');
+                }
+            }
+
+            function handleChange() {
+                // Lấy giá trị đã chọn từ phần tử select
+                var selectedValue = document.getElementById("kieu-tk").value;
+                if (selectedValue == "all") {
+                    document.getElementById("day-month-year").classList.add('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                } else if (selectedValue == "day") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = false;
+                    document.getElementById("thang").disabled = false;
+                    document.getElementById("nam").disabled = false;
+                } else if (selectedValue == "month") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = true;
+                    document.getElementById("thang").disabled = false;
+                    document.getElementById("nam").disabled = false;
+                } else if (selectedValue == "year") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = true;
+                    document.getElementById("thang").disabled = true;
+                    document.getElementById("nam").disabled = false;
+                } else if (selectedValue == "fromto") {
+                    document.getElementById("day-month-year").classList.add('d-none');
+                    document.getElementById("fromtodate").classList.remove('d-none');
+                }
+            }
+            
+            function formatDate(isoDateString) {
+                // Tạo một đối tượng Date từ chuỗi ISO 8601
+                var date = new Date(isoDateString);
+
+                // Lấy các thành phần của ngày giờ
+                var day = date.getDate();
+                var month = date.getMonth() + 1; // Tháng bắt đầu từ 0 nên cần cộng thêm 1
+                var year = date.getFullYear();
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var seconds = date.getSeconds();
+
+                // Đảm bảo rằng các thành phần có đủ số 0 ở đầu nếu cần thiết
+                day = (day < 10) ? '0' + day : day;
+                month = (month < 10) ? '0' + month : month;
+                hours = (hours < 10) ? '0' + hours : hours;
+                minutes = (minutes < 10) ? '0' + minutes : minutes;
+                seconds = (seconds < 10) ? '0' + seconds : seconds;
+
+                // Trả về chuỗi được định dạng theo yêu cầu
+                return day + '-' + month + '-' + year + ' ' + hours + ':' + minutes + ':' + seconds;
+            }
+            
+            function handleChangeTB() {
+                // Lấy giá trị đã chọn từ phần tử select
+                var selectedValue = document.getElementById("device-name").value;
+                if (selectedValue == "null") {
+                    //document.getElementById("day-month-year").classList.add('d-none');
+                    //document.getElementById("fromtodate").classList.add('d-none');
+                    var table = document.getElementById('table-content-tb');
+                    table.innerHTML = ''; // Xóa toàn bộ nội dung của bảng
+
+                } else {
+                    var table = document.getElementById('table-content-tb');
+                    var count=1;
+                    table.innerHTML = ''; // Xóa toàn bộ nội dung của bảng
+                    //document.getElementById("day-month-year").classList.add('d-none');
+                    //document.getElementById("fromtodate").classList.remove('d-none');
+                    $.ajax({
+                            url: '/api/search-thongtinsd?search='+selectedValue, // Đường dẫn tới endpoint API
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(response) {
+                                // Xóa dữ liệu cũ trong bảng
+                                $('table-content-tb').empty();
+                                console.log(response);
+                                // Thêm dữ liệu mới vào bảng
+                                response.forEach(function(thongTinSD) {
+                                    $('#table-content-tb').append(
+                                        `<tr>
+                                            <td>${count}</td>
+                                            <td>${thongTinSD.maTT}</td>
+                                            <td>${thongTinSD.maTV}</td>
+                                            <td>${thongTinSD.maTB}</td>
+                                            <td>${formatDate(thongTinSD.tgmuon)}</td>
+                                            <!-- Thêm các cột khác nếu cần -->
+                                        </tr>`
+                                    );
+                                    count+=1;
+                                });
+                                document.getElementById('tongmuon').innerHTML=count-1;
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                    
+                }
+            }
+
+            function getSelectedDate() {
+                var ngay = document.getElementById("ngay").value;
+                var thang = document.getElementById("thang").value;
+                var nam = document.getElementById("nam").value;
+
+                // Chuyển đổi giá trị tháng và ngày thành chuỗi 2 ký tự
+                if (ngay.length === 1) {
+                    ngay = "0" + ngay;
+                }
+                if (thang.length === 1) {
+                    thang = "0" + thang;
+                }
+
+                // Ghép các giá trị lại thành chuỗi ngày hoàn chỉnh
+                var selectedDate = nam + "-" + thang + "-" + ngay;
+                return selectedDate;
+            }
+
+
+            function thongke() {
+                // Lấy giá trị đã chọn từ phần tử select
+                var selectedValue = document.getElementById("kieu-tk").value;
+                if (selectedValue == "all") {
+                    $.ajax({
+                        url: "/thong-ke/thanh-vien/getCountAll",
+                        type: "GET",
+                        success: function (data) {
+                            $("#tongvao").html(data);
+                        },
+                        error: function () {
+                            $("#tongvao").html("Đã xảy ra lỗi khi tải dữ liệu");
+                        }
+                    });
+                } else if (selectedValue == "day") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = false;
+                    document.getElementById("thang").disabled = false;
+                    document.getElementById("nam").disabled = false;
+                    var date = getSelectedDate();
+                    loadDataTVNgay(date);
+                } else if (selectedValue == "month") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = true;
+                    document.getElementById("thang").disabled = false;
+                    document.getElementById("nam").disabled = false;
+                    loadDataTVThang(document.getElementById("thang").value, document.getElementById("nam").value);
+                } else if (selectedValue == "year") {
+                    document.getElementById("day-month-year").classList.remove('d-none');
+                    document.getElementById("fromtodate").classList.add('d-none');
+                    document.getElementById("ngay").disabled = true;
+                    document.getElementById("thang").disabled = true;
+                    document.getElementById("nam").disabled = false;
+                    loadDataTVNam(document.getElementById("nam").value);
+                } else if (selectedValue == "fromto") {
+                    document.getElementById("day-month-year").classList.add('d-none');
+                    document.getElementById("fromtodate").classList.remove('d-none');
+                    loadDataTVKhoang();
+                }
+                // Hiển thị giá trị đã chọn
+                console.log("Selected value:", selectedValue);
+            }
+
+            function loadDataTVKhoa() {
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/khoa",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Khoa");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+
+            function loadDataTVNganh() {
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/nganh",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Ngành");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+
+            function loadDataTVNgay(date) {
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/day?date=" + date,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Khung giờ");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+
+            function loadDataTVThang(month, year) {
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/month?month=" + month + "&year=" + year,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Ngày");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+
+            function loadDataTVNam(year) {
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/year?year=" + year,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Tháng");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+            
+            function loadDataTVKhoang(year) {
+            var tuNgayInput = document.getElementById('tu-ngay');
+                var denNgayInput = document.getElementById('den-ngay');
+                var tuNgay = new Date(tuNgayInput.value);
+                var denNgay = new Date(denNgayInput.value);
+                $.ajax({
+                    url: "/thong-ke/thanh-vien/khoang",
+                    type: "GET",
+                    data: {
+                                date1: tuNgay.toISOString(), // Convert date to ISO string format
+                                date2: denNgay.toISOString()
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        drawChartTV(data, "Khung giờ");
+                    },
+                    error: function () {
+                        console.log("Đã xảy ra lỗi khi tải dữ liệu");
+                    }
+                });
+            }
+
+
+            function drawChartTV(data, key) {
+                var labels = [];
+                var counts = [];
+                var backgroundColors = [];
+                var khoaLabels = []; // Mảng chứa tên các khoa
+                var sum = 0;
+
+                // Chuyển dữ liệu từ danh sách object thành mảng labels và mảng counts
+                for (var i = 0; i < data.length; i++) {
+                    labels.push(data[i][0]);
+                    counts.push(parseInt(data[i][1]));
+                    sum += parseInt(data[i][1]);
+                    backgroundColors.push(getRandomColor()); // Sinh màu ngẫu nhiên và thêm vào mảng backgroundColors
+                    khoaLabels.push(data[i][2]); // Thêm tên khoa vào mảng khoaLabels
+                }
+
+                document.getElementById("tongvao").innerHTML = sum;
+                var oldChart = document.getElementById("myChart");
+                oldChart.parentNode.removeChild(oldChart);
+
+                var canvas = document.createElement('canvas');
+                canvas.id = 'myChart';
+                canvas.style.width = '400px';
+                canvas.style.height = '400px';
+                canvas.style.display = 'block';
+                canvas.style.boxSizing = 'border-box';
+                canvas.width = 400;
+                canvas.height = 400;
+
+                // Lấy phần tử div có id là "thanh-vien"
+                var parentDiv = document.getElementById('thanh-vien');
+
+                // Chèn phần tử canvas vào phần tử div
+                parentDiv.appendChild(canvas);
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+
+                var stepSize = Math.ceil(counts.length / 10); // 10 là số đơn vị bạn muốn hiển thị trên trục x
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                                label: 'Số lượng thành viên',
+                                data: counts,
+                                backgroundColor: backgroundColors, // Sử dụng mảng màu ngẫu nhiên
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Số lượng thành viên' // Tên trục y
+                                },
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: key // Tên trục x
+                                },
+                                ticks: {
+                                    stepSize: stepSize // Chỉnh khoảng cách mỗi đơn vị trên trục x dựa trên stepSize tính toán
+                                }
+                            }
+                        },
+                        legend: {
+                            display: false // Ẩn chú thích mặc định
+                        },
+                        tooltips: {
+                            callbacks: {
+                                label: function (tooltipItem, data) {
+                                    var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || '';
+                                    return datasetLabel + ': ' + tooltipItem.yLabel + ' (' + khoaLabels[tooltipItem.index] + ')';
+                                },
+                                afterLabel: function (tooltipItem, data) {
+                                    return 'Màu: ' + data.datasets[0].backgroundColor[tooltipItem.index];
+                                }
+                            }
+                        },
+                        layout: {
+                            padding: {
+                                left: 10, // Khoảng cách từ biên trái đến biểu đồ
+                                right: 10, // Khoảng cách từ biên phải đến biểu đồ
+                                top: 10, // Khoảng cách từ biên trên đến biểu đồ
+                                bottom: 10 // Khoảng cách từ biên dưới đến biểu đồ
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                anchor: 'end',
+                                align: 'end'
+                            }
+                        },
+                        responsive: true
+                    }
+                });
+            }
+            function loadXuLyData() {
+                $.ajax({
+                    url: '/api/xuly-data',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        console.log(data);
+                        drawXuLyChart(data); 
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            }
+            
+            
+
+            function drawXuLyChart(data) {
+                var labels = ['Chưa xử lý', 'Đã xử lý'];
+                var counts = [0, 0]; 
+                var tongtien =0;
+                var backgroundColors = ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'];
+
+                // Đếm số lượng xử lý chưa xử lý từ dữ liệu
+                data.forEach(function(xuLy) {
+                    if (xuLy.trangThaiXL == 0) {
+                        counts[0]++;
+                        tongtien=tongtien+xuLy.soTien;
+                    } else if (xuLy.trangThaiXL == 1) {
+                        counts[1]++;
+                    }
+                    var tongTienElement = document.querySelector('#tinh-trang-xu-ly .col-auto.ms-5 h2');
+
+                    // Gắn tổng tiền vào phần tử đã chọn
+                    tongTienElement.textContent = 'Tổng tiền phạt chưa xử lý = ' + tongtien + 'đ' ;
+                });
+
+                var ctx = document.getElementById('xulyChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: { 
+                        labels: labels,
+                        datasets: [{
+                            label: 'Số lượng xử lý',
+                            data: counts,
+                            backgroundColor: backgroundColors,
+                            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+
+
+            // Hàm sinh màu ngẫu nhiên
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+        </script>
+
+    </head>
+
+    <body class="container">
+        <div th:replace="menu :: navbar"></div>
+        <h2 class="mb-3 mt-3">Thống kê</h2>
+        <!-- Tab navigation -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="thanh-vien-tab" data-bs-toggle="tab" data-bs-target="#thanh-vien"
+                        type="button" role="tab" aria-controls="thanh-vien" aria-selected="true">Thành viên</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="thiet-bi-tab" data-bs-toggle="tab" data-bs-target="#thiet-bi" type="button"
+                        role="tab" aria-controls="thiet-bi" aria-selected="false">Thiết bị</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="muon-thiet-bi-tab" data-bs-toggle="tab" data-bs-target="#muon-thiet-bi"
+                        type="button" role="tab" aria-controls="muon-thiet-bi" aria-selected="false">Thiết bị đang được mượn</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tinh-trang-xu-ly-tab" data-bs-toggle="tab" data-bs-target="#tinh-trang-xu-ly"
+                        type="button" role="tab" aria-controls="tinh-trang-xu-ly" aria-selected="false">Tình trạng xử lý</button>
+            </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content mt-3" id="myTabContent">
+            <!-- Thành viên -->
+            <div class="tab-pane fade show active" id="thanh-vien" role="tabpanel" aria-labelledby="thanh-vien-tab">
+                <div class="container d-flex gap-3 align-items-center">
+                    <h2>Theo:</h2>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" onclick="typeThongke(this)" type="radio" name="exampleRadios" id="radioKhoa" value="khoa" checked>
+                        <label class="form-check-label" for="radioKhoa">
+                            Khoa
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" onclick="typeThongke(this)" type="radio" name="exampleRadios" id="radioNganh" value="nganh">
+                        <label class="form-check-label" for="radioNganh">
+                            Ngành
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" onclick="typeThongke(this)" type="radio" name="exampleRadios" id="radioTG" value="thoigian">
+                        <label class="form-check-label" for="radioTG">
+                            Thời gian
+                        </label>
+                    </div>
+                </div>
+                <div class="container pt-3 d-none" id="menutv">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <label class="form-check-label" for="kieu-tk">Kiểu thống kê</label>
+                                </div>
+                                <div class="col-auto">
+                                    <select class="form-select" id="kieu-tk" onchange="handleChange()">
+                                        <option selected>Chọn...</option>
+                                        <option value="all">Tất cả</option>
+                                        <option value="day">Trong 1 ngày</option>
+                                        <option value="month">Trong 1 tháng</option>
+                                        <option value="year">Trong 1 năm</option>
+                                        <option value="fromto">Trong 1 khoảng</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <button onclick="thongke()" type="button" class="btn btn-primary" style="">Thống kê</button>
+                        </div>
+                        <div class="col-auto ms-5">
+                            <h2 style="color:green;">Tổng vào: </h2>
+                        </div>
+                        <div class="col-auto">
+                            <h2 style="color:green;" id="tongvao">---</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="container pt-3 d-none" id="fromtodate">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="tu-ngay">Từ ngày:</label>
+                                <input type="date" class="form-control" id="tu-ngay">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="den-ngay">Đến ngày:</label>
+                                <input type="date" class="form-control" id="den-ngay">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="container pt-3 d-none" id="day-month-year">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="ngay">Ngày:</label>
+                                <select class="form-select" id="ngay">
+                                    <option selected>Chọn ngày</option>
+                                    <!-- Thêm các tùy chọn cho ngày từ 1 đến 31 -->
+                                    <script>
+                                        for (var i = 1; i <= 31; i++) {
+                                            document.write('<option value="' + i + '">' + i + '</option>');
+                                        }
+                                    </script>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="thang">Tháng:</label>
+                                <select class="form-select" id="thang">
+                                    <option selected>Chọn tháng</option>
+                                    <!-- Thêm các tùy chọn cho tháng từ 1 đến 12 -->
+                                    <script>
+                                        for (var i = 1; i <= 12; i++) {
+                                            document.write('<option value="' + i + '">' + i + '</option>');
+                                        }
+                                    </script>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="nam">Năm:</label>
+                                <select class="form-select" id="nam">
+                                    <option selected>Chọn năm</option>
+                                    <!-- Thêm các tùy chọn cho năm từ 1900 đến năm hiện tại -->
+                                    <script>
+                                        var currentYear = new Date().getFullYear();
+                                        for (var i = currentYear; i >= 1900; i--) {
+                                            document.write('<option value="' + i + '">' + i + '</option>');
+                                        }
+                                    </script>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <canvas id="myChart" style="width: 400px; height: 400px"></canvas>
+            </div>
+
+            <!-- Thiết bị -->
+            <div class="tab-pane fade" id="thiet-bi" role="tabpanel" aria-labelledby="thiet-bi-tab">
+                <div class="container d-flex gap-3 align-items-center">
+                    <h2>Theo:</h2>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" onclick="typeThongke(this)" type="radio" name="exampleRadios1" id="radio11" value="tenthietbi" checked>
+                        <label class="form-check-label" for="radio11">
+                            Tên thiết bị
+                        </label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" onclick="typeThongke(this)" type="radio" name="exampleRadios1" id="radio22" value="tgthietbi">
+                        <label class="form-check-label" for="radio22">
+                            Thời gian
+                        </label>
+                    </div>
+                </div>
+                <div class="container pt-3" id="menutv">
+                    <select class="form-select" id="device-name" placeholder="Pick a device..." onchange="handleChangeTB()">
+                    <option value="null">Chọn thiết bị...</option>
+                    
+                        
+                  </select>
+                    
+                    <div class="container pt-3 d-none" id="fromtodateTB">
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="tu-ngay-TB">Từ ngày:</label>
+                                <input type="date" class="form-control" id="tu-ngay-TB" onchange="validateDates()">
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="den-ngay-TB">Đến ngày:</label>
+                                <input type="date" class="form-control" id="den-ngay-TB" onchange="validateDates()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                                      
+                <script>
+                        $.ajax({
+                            url: '/api/get-all-devices', // Đường dẫn tới endpoint API
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(data) {
+                                console.log(data);
+                                for (var i = 0; i < data.length; i++) {
+                                    // Tạo một tùy chọn mới và thêm vào phần tử select
+                                    $('<option>').val(data[i].maTB).text(data[i].tenTB+"-"+data[i].moTaTB).appendTo('#device-name');
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+                            
+                    </script>
+
+                    <div class="row align-items-center">
+                        <div class="col-auto ms-5">
+                            <h2 style="color:green;">Tổng mượn: </h2>
+                        </div>
+                        <div class="col-auto">
+                            <h2 style="color:green;" id="tongmuon">---</h2>
+                        </div>
+                    </div>
+                    
+                      
+                </div>
+                    <table border="1" class="table table-striped table-bordered" id="tb-ten">
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Mã thông tin</th>
+                        <th>Mã thành viên</th>
+                        <th>Mã thiết bị</th>
+                        <th>Thời gian mượn</th>
+                      </tr>
+                    </thead>
+                    <tbody id="table-content-tb">
+                    </tbody>
+                    </table>
+                
+                    <table border="1" class="table table-striped table-bordered d-none" id="tb-tg">
+                    <thead>
+                      <tr>
+                        <th>STT</th>
+                        <th>Mã thiết bị</th>
+                        <th>Tên thiết bị</th>
+                        <th>Số lần mượn</th>
+                      </tr>
+                    </thead>
+                    <tbody id="table-content-tb-tg">
+                    </tbody>
+                    </table>
+                    
+            </div>
+
+            
+            <!-- Thiết bị đang được mượn -->
+            <div class="tab-pane fade" id="muon-thiet-bi" role="tabpanel" aria-labelledby="muon-thiet-bi-tab">
+                <div class="col-md-10 mx-auto">
+                    <div class="col-auto">
+                        <div class="row">
+                            <div class="col-auto">
+                                <label class="form-check-label" for="kieu-tk2" style="padding-top: 5px ">Kiểu thống kê</label>
+                            </div>
+                            <div class="col-auto">
+                                <select class="form-select" id="kieu-tk2" onchange="handleChange2()">
+                                    <option value="all">Tất cả</option>
+                                    <option value="day">Trong 1 ngày</option>
+                                    <option value="month">Trong 1 tháng</option>
+                                    <option value="year">Trong 1 năm</option>
+                                    <option value="fromto">Trong 1 khoảng</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button onclick="thongkedangmuon()" type="button" class="btn btn-primary" style="">Thống kê</button>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="container pt-3 d-none" id="fromtodate-container">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="tu-ngay">Từ ngày:</label>
+                                    <input type="date" class="form-control" id="fromday">
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="den-ngay">Đến ngày:</label>
+                                    <input type="date" class="form-control" id="today">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="container pt-3 d-none" id="day-month-yeardm-container">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="ngay-select">Ngày:</label>
+                                    <select class="form-select" id="ngay-select">
+                                        <option selected>Chọn ngày</option>
+                                        <!-- Thêm các tùy chọn cho ngày từ 1 đến 31 -->
+                                        <script>
+                                            for (var i = 1; i <= 31; i++) {
+                                                document.write('<option value="' + i + '">' + i + '</option>');
+                                            }
+                                        </script>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="thang-select">Tháng:</label>
+                                    <select class="form-select" id="thang-select">
+                                        <option selected>Chọn tháng</option>
+                                        <!-- Thêm các tùy chọn cho tháng từ 1 đến 12 -->
+                                        <script>
+                                            for (var i = 1; i <= 12; i++) {
+                                                document.write('<option value="' + i + '">' + i + '</option>');
+                                            }
+                                        </script>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-group">
+                                    <label for="nam-select">Năm:</label>
+                                    <select class="form-select" id="nam-select">
+                                        <option selected>Chọn năm</option>
+                                        <!-- Thêm các tùy chọn cho năm từ 1900 đến năm hiện tại -->
+                                        <script>
+                                            var currentYear = new Date().getFullYear();
+                                            for (var i = currentYear; i >= 1900; i--) {
+                                                document.write('<option value="' + i + '">' + i + '</option>');
+                                            }
+                                        </script>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                     <!-- Phần tử bảng thiết bị -->
+                     <table id="bang-thiet-bi" class="table table-striped table-bordered" style="margin-top: 20px">
+                        <thead>
+                            <tr>
+                                <th>Mã thiết bị</th>
+                                <th>Tên thiết bị</th>
+                                <th>Mã thành viên</th>
+                                <th>Mã TT</th>
+                                <th>Thời gian mượn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+            </div>
+
+            <script>
+                function handleChange2() {
+                    var selectedValue = document.getElementById("kieu-tk2").value;
+                    var ngayElement = document.getElementById("ngay-select");
+                    var thangElement = document.getElementById("thang-select");
+                    var namElement = document.getElementById("nam-select");
+                    var tableElement = document.getElementById("bang-thiet-bi");
+
+                    if (selectedValue == "all") {
+                        document.getElementById("day-month-yeardm-container").classList.add('d-none');
+                        document.getElementById("fromtodate-container").classList.add('d-none');
+                        tableElement.classList.add('d-none');
+                    } else if (selectedValue == "day") {
+                        document.getElementById("day-month-yeardm-container").classList.remove('d-none');
+                        document.getElementById("fromtodate-container").classList.add('d-none');
+                        ngayElement.disabled = false;
+                        thangElement.disabled = false;
+                        namElement.disabled = false;
+                        tableElement.classList.add('d-none');
+                    } else if (selectedValue == "month") {
+                        document.getElementById("day-month-yeardm-container").classList.remove('d-none');
+                        document.getElementById("fromtodate-container").classList.add('d-none');
+                        ngayElement.disabled = true;
+                        thangElement.disabled = false;
+                        namElement.disabled = false;
+                        tableElement.classList.add('d-none');
+                    } else if (selectedValue == "year") {
+                        document.getElementById("day-month-yeardm-container").classList.remove('d-none');
+                        document.getElementById("fromtodate-container").classList.add('d-none');
+                        ngayElement.disabled = true;
+                        thangElement.disabled = true;
+                        namElement.disabled = false;
+                        tableElement.classList.add('d-none');
+                    } else if (selectedValue == "fromto") {
+                        document.getElementById("day-month-yeardm-container").classList.add('d-none');
+                        document.getElementById("fromtodate-container").classList.remove('d-none');
+                        tableElement.classList.add('d-none');
+                    }
+                }
+                function thongkedangmuon() {
+                    var kieuThongKe = document.getElementById('kieu-tk2').value;
+                    var tableBody = document.getElementById('bang-thiet-bi').getElementsByTagName('tbody')[0];
+                    tableBody.innerHTML = '';
+
+                    if (kieuThongKe === 'all') {
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/all",
+                            dataType: "json",
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });;
+                                    
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon) ;
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    }else if (kieuThongKe === 'day') {
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+
+                        // Lấy giá trị từ các select box
+                        var ngay = $("#ngay-select").val();
+                        var thang = $("#thang-select").val();
+                        var nam = $("#nam-select").val();
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/day",
+                            dataType: "json",
+                            data: {
+                                ngay: ngay,
+                                thang: thang,
+                                nam: nam
+                            },
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });
+
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon);
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    }
+                    else if (kieuThongKe === 'month') {
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        var thang = $("#thang-select").val();
+                        var nam = $("#nam-select").val();
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/month",
+                            dataType: "json",
+                            data: {
+                                thang: thang,
+                                nam: nam
+                            },
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });
+
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon);
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    } else if (kieuThongKe === 'year') {
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        var nam = $("#nam-select").val();
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/year",
+                            dataType: "json",
+                            data: {
+                                nam: nam
+                            },
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });
+
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon);
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    } else if (kieuThongKe === 'fromto') {
+                        
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        var tuNgayInput = document.getElementById('fromday').value;
+                        var denNgayInput = document.getElementById('today').value;
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/fromto",
+                            dataType: "json",
+                            data: {
+                                from: tuNgayInput,
+                                to: denNgayInput
+                            },
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                // Duyệt qua dữ liệu nhận được và thêm vào bảng
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });
+
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon);
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    } else {
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/all",
+                            dataType: "json",
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });;
+                                    
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon) ;
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    }
+                }
+
+                function formatTime(timestamp) {
+                    var dateTime = new Date(timestamp);
+                    var year = dateTime.getFullYear();
+                    var month = ("0" + (dateTime.getMonth() + 1)).slice(-2);
+                    var day = ("0" + dateTime.getDate()).slice(-2);
+                    var hours = ("0" + dateTime.getHours()).slice(-2);
+                    var minutes = ("0" + dateTime.getMinutes()).slice(-2);
+                    var seconds = ("0" + dateTime.getSeconds()).slice(-2);
+                    var formattedTime = year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds;
+
+
+                    return formattedTime;
+                }
+                function loadtabledangmuon(){
+                        var tableBody = document.getElementById('bang-thiet-bi').getElementsByTagName('tbody')[0];
+                       tableBody.innerHTML = '';
+                        document.getElementById('bang-thiet-bi').classList.remove('d-none');
+                        $.ajax({
+                            type: "GET",
+                            url: "/thong-ke/thietbidangmuon/all",
+                            dataType: "json",
+                            success: function (data) {
+                                var thongTinSDList = data.thongTinSDList;
+                                var thietBiList = data.thietBiList;
+                                console.log(data);
+                                thongTinSDList.forEach(function (item, index) {
+                                    var row = tableBody.insertRow();
+                                    var cellMaThietBi = row.insertCell(0);
+                                    
+                                    var cellTenThietBi = row.insertCell(1);
+                                    var cellMaThanhVien = row.insertCell(2);
+                                    var cellMaTT = row.insertCell(3);   
+                                    var cellThoiGianMuon = row.insertCell(4);
+
+                                    cellMaThietBi.innerHTML = item.maTB;
+                                    thietBiList.forEach(function (itemTb, index1) {
+                                        if (item.maTB == itemTb.maTB) {
+                                            cellTenThietBi.innerHTML = itemTb.tenTB;
+                                        }
+                                    });;
+                                    
+                                    cellMaThanhVien.innerHTML = item.maTV;
+                                    cellMaTT.innerHTML = item.maTT;
+                                    cellThoiGianMuon.innerHTML = formatTime(item.tgmuon) ;
+                                });
+                            },
+                            error: function (xhr, status, error) {
+                                console.error("Error fetching data:", error);
+                            }
+                        });
+                    
+                }
+                loadtabledangmuon();
+       
+            </script>
+
+
+            <!-- Tình trạng xử lý -->
+            <div class="tab-pane fade" id="tinh-trang-xu-ly" role="tabpanel" aria-labelledby="tinh-trang-xu-ly-tab">
+                <div class="col-auto ms-5">
+                    <h2 style="color:red;">Tổng tiền phạt chưa xử lý = </h2>
+                </div>
+                <canvas id="xulyChart" style="width: 400px; height: 400px"></canvas>
+                    
+            </div>
+        </div>
+
+        <!-- Bootstrap JS -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</html>

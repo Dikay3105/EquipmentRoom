@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        
+        <div>List vegetable</div>
+        <table border="1">
+            <tr>
+               <th>ID</th>
+               <th>Name</th>
+               <th>Unit</th>
+               <th>Amount</th>
+               <th>Price</th>
+               <th>Edit</th>
+            </tr>
+            <tr th:each ="row, state: ${data}">
+               <td th:utext="${state.count}">...</td>
+               <td th:utext="${row.VegetableName}">...</td>
+               <td th:utext="${row.Unit}">...</td>
+               <td th:utext="${row.Amount}">...</td>
+               <td th:utext="${row.Price}">...</td>
+               <td><a th:href="'/vegetable/edit/'+ ${state.count}">Edit</a></th>
+            </tr>
+         </table>
+        <p><a href="/vegetable/add">Add vegetable</p>
+    </body>
+</html>

@@ -1,0 +1,164 @@
+<html lang="en">
+  <head>
+    <title>Đăng nhập</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="card mx-auto" style="max-width: 500px">
+          <h5 class="card-header" style="text-align: center">Đăng nhập</h5>
+          <div class="card-body">
+            <form id="ThanVien">
+              <div class="mb-3">
+                <label for="email" class="form-label">Mã số sinh viên</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="email"
+                  name="email"
+                  required
+                  placeholder="Nhập mã số sinh viên"
+                />
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password"
+                  required
+                  placeholder="Nhập mật khẩu"
+                />
+              </div>
+              <button type="submit" class="btn btn-primary" style="width: 100%">
+                Đăng nhập
+              </button>
+
+              <a
+                href="http://localhost:8080/thanh-vien/forgot-password"
+                class="d-flex flex-row justify-content-center align-items-center w-100 mt-3 text-decoration-none"
+              >
+                <span class="">Quên mật khẩu ?</span>
+              </a>
+            </form>
+            <div
+              class="w-100 d-flex flex-row justify-content-center align-items-center gap-1"
+            >
+              <p class="h6 mb-0">Chưa có tài khoản ?</p>
+              <a
+                href="http://localhost:8080/user/signup"
+                class="text-decoration-none"
+                >Đăng ký ngay !</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="dynamicModal"
+      tabindex="-1"
+      aria-labelledby="modalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalLabel">Thông báo</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body" id="modal-message"></div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document
+        .getElementById("ThanVien")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const modalElement = new bootstrap.Modal(
+            document.getElementById("dynamicModal")
+          );
+          const modal_message = document.getElementById("modal-message");
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          if (email === "admin" || password === "admin") {
+            window.location.href = "/thanh-vien/join-area";
+            return;
+          }
+
+          fetch("/user/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              maTV: email,
+              hoten: "",
+              khoa: "",
+              nganh: "",
+              sdt: "",
+              email: "",
+              password: password,
+            }),
+          })
+            .then((response) => {
+              if (response.status == 500) {
+                throw new Error("Lỗi máy chủ, vui lòng thử lại sau !");
+              } else if (response.status == 400) {
+                throw new Error("Mã tài khoản hoặc mật khẩu không đúng !");
+              } else if (response.status == 401) {
+                throw new Error(
+                  "Tài khoản đã vi phạm chính sách của chúng tôi  !"
+                );
+              } else {
+                return response.json();
+              }
+            })
+            .then((data) => {
+              console.log(data);
+              localStorage.setItem("MaTV", data.maTV);
+              window.location.href = "/user/infor";
+            })
+            .catch((error) => {
+              console.error("Error:", error.message);
+              modal_message.innerHTML = error.message;
+              modalElement.show();
+            });
+        });
+    </script>
+  </body>
+</html>

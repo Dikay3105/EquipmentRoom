@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cập nhật xử lý</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Link to Bootstrap Datepicker CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+
+</head>
+<body class="container py-5">
+    <div class="col-md-6 mx-auto">
+        <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+            <i class="bi bi-arrow-left"></i> Trở về
+        </button>
+        <h2 class="mb-4 col-12" style="text-align: center">Cập nhật thông tin xử lý vi phạm</h2>
+        <form id="xulyForm">
+        <div class="mb-3">
+            <label for="maXL" class="form-label">Mã xử lý:</label>
+            <input type="number" id="maXL" name="maXL" class="form-control" th:value="${xuLy.maXL}" readonly>
+        </div>
+        <div class="mb-3">
+            <label for="maTV" class="form-label">Mã thành viên * :</label>
+            <select id="maTV" name="maTV" class="form-select" required>
+                <option th:each="thanhVien : ${thanhvienList}"
+                        th:value="${thanhVien.maTV}"
+                        th:text="${thanhVien.maTV}"
+                        th:selected="${thanhVien.maTV == xuLy.maTV}">
+                </option>
+            </select>
+        </div>
+
+
+        <div class="mb-3">
+            <label for="hinhThucXL" class="form-label">Hình thức xử lý * :</label>
+            <select id="hinhThucXL" name="hinhThucXL" class="form-select" required onchange="toggleSoTienInput()">
+                <option value="Khóa thẻ 1 tháng" th:selected="${xuLy.hinhThucXL == 'Khóa thẻ 1 tháng'}">Khóa thẻ 1 tháng</option>
+                <option value="Khóa thẻ 2 tháng" th:selected="${xuLy.hinhThucXL == 'Khóa thẻ 2 tháng'}">Khóa thẻ 2 tháng</option>
+                <option value="Khóa thẻ vĩnh viễn" th:selected="${xuLy.hinhThucXL == 'Khóa thẻ vĩnh viễn'}">Khóa thẻ vĩnh viễn</option>
+                <option value="Bồi thường" th:selected="${xuLy.hinhThucXL == 'Bồi thường'}">Bồi thường</option>
+                <option value="Khóa thẻ 1 tháng và bồi thường" th:selected="${xuLy.hinhThucXL == 'Khóa thẻ 1 tháng và bồi thường'}">Khóa thẻ 1 tháng và bồi thường</option>
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+            <label for="soTien" class="form-label">Số tiền:</label>
+            <input type="number" id="soTien" name="soTien" class="form-control" th:value="${xuLy.soTien}" required disabled>
+        </div>
+
+        
+
+        
+            <!-- Các input fields -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="ngayXL" class="form-label">Ngày xử lý * :</label>
+                    <input type="text" id="ngayXL" name="ngayXL" class="form-control" required th:attr="data-ngayXL=${xuLy.ngayXL}">
+
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="gioXL" class="form-label">Giờ:</label>
+                    <select id="gioXL" name="gioXL" class="form-select"></select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label for="phutXL" class="form-label">Phút:</label>
+                    <select id="phutXL" name="phutXL" class="form-select"></select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="trangThaiXL" class="form-label">Trạng thái xử lý:</label>
+                <select id="trangThaiXL" name="trangThaiXL" class="form-select" th:value="${xuLy.trangThaiXL}">
+                    <option value="0">Chưa xử lý</option>
+                    <option value="1">Đã xử lý</option>
+                </select>
+            </div>
+            <div class="d-flex" style="gap: 10px">
+                <button type="button" class="btn btn-primary" style="flex: 8" onclick="saveXuLy()">Lưu</button>
+                <!--<button type="button" class="btn btn-secondary" style="flex: 1" onclick="clearForm()">Xóa form</button>-->
+            </div>
+        </form>
+    </div>
+
+    <!-- Link to Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Link to jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Link to Bootstrap Datepicker JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+    <script>
+            function toggleSoTienInput() {
+                var hinhThucXL = document.getElementById("hinhThucXL").value;
+                var soTienInput = document.getElementById("soTien");
+
+                if (hinhThucXL === "Bồi thường" || hinhThucXL === "Khóa thẻ 1 tháng và bồi thường") {
+                    soTienInput.removeAttribute("disabled");
+                } else {
+                    soTienInput.setAttribute("disabled", "disabled");
+                    soTienInput.value = "";
+                }
+            }
+    </script>
+    <script>
+        // Khởi tạo Bootstrap Datepicker cho ngày xử lý
+        $(document).ready(function(){
+            $('#ngayXL').datepicker({
+                format: 'yyyy-mm-dd', // Định dạng ngày tháng
+                autoclose: true // Đóng datepicker khi chọn xong
+            });
+        });
+
+        function saveXuLy() {
+            var maXL = parseInt(document.getElementById('maXL').value);
+            var maTV = parseInt(document.getElementById('maTV').value);
+            var hinhThucXL = document.getElementById('hinhThucXL').value;
+            var soTien = parseInt(document.getElementById('soTien').value);
+            var ngayXL = document.getElementById('ngayXL').value;
+            var gioXL = document.getElementById('gioXL').value;
+            var phutXL = document.getElementById('phutXL').value;
+            var trangThaiXL = document.getElementById('trangThaiXL').value;
+            if ((hinhThucXL === 'Bồi thường' || hinhThucXL === 'Khóa thẻ 1 tháng và bồi thường') && isNaN(soTien)) {
+                alert('Vui lòng nhập số tiền bồi thường!');
+                return;
+            }
+            if (!ngayXL.trim()) {
+                alert('Vui lòng chọn ngày xử lý!');
+                return;
+            }
+            var dateTimeStr = ngayXL + ' ' + gioXL + ':' + phutXL + ':00';
+            var dateObject = new Date(dateTimeStr);
+
+            $.ajax({
+                type: 'POST',
+                url: '/xuly/save',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    maXL: maXL,
+                    maTV: maTV,
+                    hinhThucXL: hinhThucXL,
+                    soTien: soTien,
+                    ngayXL: dateObject,
+                    trangThaiXL: trangThaiXL
+                }),
+                success: function(response) {
+                    alert('Dữ liệu đã được cập nhật thành công!');
+                    window.location.href = '/xuly/all';
+                },
+                error: function(error) {
+                    console.log(error);
+                    alert('Có lỗi xảy ra khi cập nhật dữ liệu!');
+                }
+            });
+        }
+
+/*
+        function clearForm() {
+            document.getElementById("maTV").value = "";
+            document.getElementById("hinhThucXL").value = "";
+            document.getElementById("soTien").value = "";
+            document.getElementById("ngayXL").value = "";
+            document.getElementById("gioXL").value = ""; 
+            document.getElementById("phutXL").value = ""; 
+            document.getElementById("trangThaiXL").value = "0";
+        }*/
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+    <script>
+    var gioXLSelect = document.getElementById('gioXL');
+    for (var gio = 0; gio <= 23; gio++) {
+        var option = document.createElement('option');
+        option.value = gio;
+        option.textContent = gio < 10 ? '0' + gio : gio; // Định dạng hiển thị giờ
+        gioXLSelect.appendChild(option);
+    }
+
+    var phutXLSelect = document.getElementById('phutXL');
+    for (var phut = 0; phut <= 59; phut++) {
+        var option = document.createElement('option');
+        option.value = phut;
+        option.textContent = phut < 10 ? '0' + phut : phut; // Định dạng hiển thị phút
+        phutXLSelect.appendChild(option);
+    }
+</script>
+<script>// Thêm sự kiện onchange vào các dropdown giờ và phút
+    document.getElementById('gioXL').onchange = function() {
+        var gioXL = this.value;
+        this.value = gioXL.padStart(2, '0');
+    };
+
+    document.getElementById('phutXL').onchange = function() {
+        var phutXL = this.value;
+        this.value = phutXL.padStart(2, '0');
+    };
+</script>
+<script>
+    function loadDateTime(dateTimeStr) {
+        if (!dateTimeStr || dateTimeStr.trim() === '') {
+            console.error('Invalid dateTimeStr:', dateTimeStr);
+            return; 
+        }
+
+        var dateTimeParts = dateTimeStr.split(' ');
+        var dateStr = dateTimeParts[0];
+        var timeParts = dateTimeParts[1].split(':');
+        var hourStr = timeParts[0];
+        var minuteStr = timeParts[1];
+
+        hourStr = parseInt(hourStr, 10);
+        minuteStr = parseInt(minuteStr, 10);
+        document.getElementById("ngayXL").value = dateStr;
+        document.getElementById("gioXL").value = hourStr;
+        document.getElementById("phutXL").value = minuteStr;
+    }
+
+    
+
+</script>
+<script>
+    var xuLyNgayXL = document.getElementById('ngayXL').getAttribute('data-ngayXL');
+    loadDateTime(xuLyNgayXL);
+</script>
+
+</body>
+</html>

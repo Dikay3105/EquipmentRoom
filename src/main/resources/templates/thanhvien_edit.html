@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chỉnh sửa thông tin thành viên</title>
+        <!-- Link to Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+            integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        />
+        <!-- Link to Bootstrap Datepicker CSS -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" rel="stylesheet">
+    </head>
+    <body class="container py-5">
+    <div class="col-md-6 mx-auto">
+        <button type="button" class="btn btn-outline-secondary" onclick="goBack()">
+            <i class="bi bi-arrow-left"></i> Trở về
+        </button>
+        <h2 class="mb-4 col-12" style="text-align: center">Chỉnh sửa thông tin thành viên</h2>
+        <form id="thietBiForm" onsubmit="return validateAndSave()">
+            <div class="mb-3">
+                <label for="maTV" class="form-label">Mã thành viên:</label>
+                <input type="text" id="maTV" name="maTV" class="form-control" th:value="${thanhvien.MaTV}" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="hoTen" class="form-label">Họ tên thành viên * :</label>
+                <input type="text" id="hoTen" name="hoTen" class="form-control" th:value="${thanhvien.Hoten}" required>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="khoa" class="form-label">Khoa * :</label>
+                        <select
+                            id="khoa"
+                            class="form-select"
+                            aria-label="Default select example"
+                            required
+                          >
+                            <option value="CNTT" th:selected="${thanhvien.Khoa == 'CNTT'}">CNTT</option>
+                            <option value="SP KHTN" th:selected="${thanhvien.Khoa == 'SP KHTN'}">SP KHTN</option>
+                            <option value="Ngoại Ngữ" th:selected="${thanhvien.Khoa == 'Ngoại Ngữ'}">Ngoại Ngữ</option>
+                            <option value="SP KHXH" th:selected="${thanhvien.Khoa == 'SP KHXH'}">SP KHXH</option>
+                            <option value="QLGD" th:selected="${thanhvien.Khoa == 'QLGD'}">QLGD</option>
+                            <option value="QTKD" th:selected="${thanhvien.Khoa == 'QTKD'}">QTKD</option>
+                            <option value="Toán UD" th:selected="${thanhvien.Khoa == 'Toán UD'}">Toán UD</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="mb-3">
+                        <label for="nganh" class="form-label">Ngành * :</label>
+                        <select
+                            id="nganh"
+                            class="form-select"
+                            aria-label="Default select example"
+                            required
+                        >
+                          <option value="Toán" th:selected="${thanhvien.Nganh == 'Toán'}">Toán</option>
+                          <option value="Lí" th:selected="${thanhvien.Nganh == 'Lí'}">Lí</option>
+                          <option value="Văn" th:selected="${thanhvien.Nganh == 'Văn'}">Văn</option>
+                          <option value="Anh" th:selected="${thanhvien.Nganh == 'Anh'}">Anh</option>
+                          <option value="Sử" th:selected="${thanhvien.Nganh == 'Sử'}">Sử</option>
+                          <option value="Địa" th:selected="${thanhvien.Nganh == 'Địa'}">Địa</option>
+                          <option value="KTPM" th:selected="${thanhvien.Nganh == 'KTPM'}">KTPM</option>
+                            <option value="NNA" th:selected="${thanhvien.Nganh == 'NNA'}">NNA</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="sdt" class="form-label">Số điện thoại * :</label>
+                <input type="text" id="sdt" name="sdt" class="form-control" th:value="${thanhvien.SDT}" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email * :</label>
+                <input type="email" id="email" name="email" class="form-control" th:value="${thanhvien.Email}" required>
+            </div>
+            <input type="text" id="password" name="password" class="form-control" th:value="${thanhvien.Password}" readonly hidden>
+
+            <div class="d-flex" style="gap: 10px">
+                <button type="submit" class="btn btn-primary" style="flex: 8">Lưu</button>
+                <button type="button" class="btn btn-secondary" style="flex: 1" onclick="clearForm()">Xóa form</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Link to Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Link to jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Your JavaScript code -->
+    <script>
+    function validateAndSave() {
+        // Get the value of the email input
+        var maTV = document.getElementById('maTV').value;
+        var emailInput = document.getElementById('email').value;
+        var sdt = document.getElementById('sdt').value;
+
+        // Regular expression to validate email format
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        var sdtRegex = /^0\d{9}$/;
+        
+        
+        // Check if the email format is correct
+        if (!emailRegex.test(emailInput)) {
+            alert("Vui lòng nhập đúng định dạng email\nVí dụ: abcd@gmail.com");
+            return false;
+        } else if(!sdtRegex.test(sdt)) {
+            alert("Vui lòng nhập đúng định dạng số điện thoại (Đủ 10 số)\nVí dụ: 0912345678");
+            return false;
+        }
+        
+//        if()
+
+        // If the email format is correct, proceed with saving ThietBi
+        saveThietBi();
+
+        // Return false to prevent the form from being submitted again
+        return false;
+    }
+     function saveThietBi() {
+            // Get values from form fields
+            var maTV = document.getElementById('maTV').value;
+            var hoTen = document.getElementById('hoTen').value;
+            var khoa = document.getElementById('khoa').value;
+            var nganh = document.getElementById('nganh').value;
+            var sdt = document.getElementById('sdt').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            
+            if (!maTV || !hoTen || !khoa || !nganh || !sdt || !email || !password) {
+                // If any of the variables is empty, return
+                alert("Vui lòng không bỏ ô quan trọng (*)")
+                return;
+            }
+//            if(document.getElementById("khoa").selectedIndex = 0) {
+//                alert("Vui lòng chọn khoa")
+//                return;
+//            }
+//            if(document.getElementById("nganh").selectedIndex = 0) {
+//                alert("Vui lòng chọn ngành")
+//                return;
+//            }
+            // Create a JavaScript object to store ThietBi data
+            var data = {
+                maTV: maTV,
+                hoten: hoTen,
+                khoa: khoa,
+                nganh: nganh,
+                sdt: sdt,
+                email: email,
+                password: password
+            };
+
+            // Send ThietBi data to the server via AJAX
+            $.ajax({
+                type: 'POST',
+                url: '/thanh-vien/update', 
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    // Handle success response
+                    alert('Thông tin thành viên đã được cập nhật thành công!');
+                    // Redirect to the previous page or any desired page
+                    window.location.href = '/thanh-vien/all'; // Redirect to the thietbi page
+                },
+                error: function(error) {
+                    // Handle error response
+                    console.error(error);
+                    alert('Có lỗi xảy ra khi sửa dữ liệu!\nVui lòng không bỏ ô quan trọng (*)\n');
+
+                }
+            });
+        }
+
+        // Function to clear form fields
+        function clearForm() {
+            document.getElementById('hoTen').value = '';
+            document.getElementById("khoa").selectedIndex = 0;
+            document.getElementById("nganh").selectedIndex = 0;
+            document.getElementById('sdt').value = '';
+            document.getElementById('email').value = '';
+        }
+
+        // Function to navigate back to the previous page
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

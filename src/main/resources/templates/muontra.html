@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <title>Mượn Trả</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link type="text/css" href="/css/navBar.css" rel="stylesheet" />
+    </head>
+    <body class="container">
+        <div th:replace="menu :: navbar"></div>
+        <div class="d-flex justify-content-between">
+                <h2 class="mb-3 mt-3">Quản lý mượn trả</h2> 
+                <a class="mb-3 mt-3" href="/danhsachmuontra">
+                    <button  type="button" class="btn btn-primary">Danh sách mượn trả</button>
+                </a>
+            </div>
+        <form th:action="@{/muontra/save}" method="POST" onsubmit="return HandleSubmit()">
+            
+            <div class="mb-3">
+                    <label><h6>1. Chọn tác vụ:</h6></label>         
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="muon" checked onChange="loadDataToTableThietBi(this.value,document.getElementById('tv-select').value,document.getElementById('search-el').value)">
+                      <label class="form-check-label" for="inlineRadio1">Mượn thiết bị</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="tra" onChange="loadDataToTableThietBi(this.value,document.getElementById('tv-select').value,document.getElementById('search-el').value)">
+                      <label class="form-check-label" for="inlineRadio2">Trả thiết bị</label>
+                    </div> 
+                </div>
+            <div class="mb-3">
+                <label><h6>2. Chọn thành viên:</h6></label>
+                <select class="form-select" aria-label="Default select example" id="tv-select" name="tv-select" onchange="">
+                    <option th:each="data: ${tvList}" th:value="${data.MaTV}" th:text="${data.Hoten + ' - ' + data.MaTV}"></option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label><h6>3. Chọn thiết bị:</h6></label>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-3">
+                    <div class="input-group">
+                        <input type="text" class="form-control border border-secondary" placeholder="Tìm kiếm theo Mã TB / Tên TB" aria-label="Search" aria-describedby="basic-addon1" id="search-el" >
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2" onclick="loadDataToTableThietBi(getSelectedRadioValue('inlineRadioOptions'), document.getElementById('tv-select').value,document.getElementById('search-el').value)"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
+                </div>
+                <table border="1" class="table table-striped table-bordered">
+                    <thead>
+                      <tr>
+                        <th scope="col">Mã thiết bị</th>
+                        <th scope="col">Tên thiết bị</th>
+                        <th scope="col">Mô tả</th>
+                        <th scope="col" class="text-center">Chọn</th>
+                      </tr>
+                    </thead>
+                    <tbody id="data-table">
+                      
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end mb-2">
+                <button class="btn btn-success btn-lg" type="submit">Duyệt</button>
+            </div>
+        </form>
+        <script>
+            loadDataToTableThietBi("muon", document.getElementById('tv-select').value,"")
+            function loadDataToTableThietBi(status, matv,search) {
+                // Gửi request đến server để lấy dữ liệu
+                fetch('/api/get-devices?status=' + status + '&matv=' + matv + '&search=' + search)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Xóa dữ liệu cũ trong bảng
+                        document.getElementById('data-table').innerHTML = '';
+                        if(data.length === 0 && status === "muon") {
+                            document.getElementById('data-table').innerHTML = '<tr><td colspan="4" class="text-center">Không có dữ liệu</td></tr>';
+                            return;
+                        } else if(data.length === 0 && status === "tra") {
+                            document.getElementById('data-table').innerHTML = '<tr><td colspan="4" class="text-center">Người dùng không mượn thiết bị</td></tr>';
+                            return;
+                        }
+                        // Thêm dữ liệu mới vào bảng
+                        data.forEach(device => {
+                            let row = `<tr>
+                                <td>${device.maTB}</td>
+                                <td>${device.tenTB}</td>
+                                <td>${device.moTaTB}</td>
+                                <td class="d-flex justify-content-evenly">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="${device.maTB}" id="flexCheckDefault" name="thietBiCheckbox">
+                                    </div>
+                                </td>
+                            </tr>`;
+                            document.getElementById('data-table').innerHTML += row;
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+            }           
+            function getSelectedRadioValue(name) {
+                var radios = document.getElementsByName(name);
+                for (var i = 0; i < radios.length; i++) {
+                    if (radios[i].checked) {
+                        return radios[i].value;
+                    }
+                }
+            }
+
+            // Sử dụng hàm này trong sự kiện onChange của select
+            document.getElementById('tv-select').addEventListener('change', function() {
+                var selectedRadioValue = getSelectedRadioValue('inlineRadioOptions');
+                var selectedMemberValue = this.value;
+                loadDataToTableThietBi(selectedRadioValue, selectedMemberValue,document.getElementById('search-el').value);
+            });
+
+            function HandleSubmit() {
+                if(document.querySelectorAll('input[name="thietBiCheckbox"]:checked').length === 0){
+                    if(getSelectedRadioValue('inlineRadioOptions') === "muon") {
+                        alert('Vui lòng chọn ít nhất 1 thiết bị để mượn');
+                    } else {
+                        alert('Vui lòng chọn ít nhất 1 thiết bị để trả');
+                    }
+                    return false;
+                }
+                if(getSelectedRadioValue('inlineRadioOptions') === "muon") {
+                    alert('Mượn thành công');
+                } else {
+                    alert('Trả thành công');
+                }
+                return true;
+            }
+        </script>
+    </body>
+</html>

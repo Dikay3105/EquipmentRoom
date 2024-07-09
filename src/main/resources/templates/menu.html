@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+  <head>
+    <title>navbar</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="container">
+    <!--        <nav >
+            <ul id="navbarList" class="nav" style="margin-right: 10px;">
+                 <li class="nav-item">
+                     <a class="nav-link active" aria-current="page" th:href="@{/thanh-vien/join-area}">Khu vực học tập</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link active" aria-current="page" th:href="@{/thanh-vien/all}">Quản lý thành viên</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link" th:href="@{/muontra}">Quản lý mượn trả</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link" th:href="@{/thietbi}">Quản lý thiết bị</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link" th:href="@{/quanlydatcho}">Quản lý đặt chỗ</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link" aria-current="page" th:href="@{/xuly/all}">Xử lý vi phạm</a>
+                 </li>
+                 <li class="nav-item">
+                   <a class="nav-link" th:href="@{/thong-ke}">Thống kê</a>
+                 </li>
+                 <li class="nav-item" style="margin-left: auto">
+                   <a class="nav-link" href="#">Đăng xuất</a>
+                 </li>
+             </ul> 
+        </nav>-->
+    <nav th:fragment="navbar" class="navbar navbar-expand-custom navbar-mainbg">
+      <button
+        class="navbar-toggler"
+        type="button"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <i class="fas fa-bars text-white"></i>
+      </button>
+      <div
+        class="collapse navbar-collapse"
+        id="navbarSupportedContent"
+        style="padding-left: 20px"
+      >
+        <ul class="navbar-nav ml-auto" style="align-items: center">
+          <div class="hori-selector">
+            <div class="left"></div>
+            <div class="right"></div>
+          </div>
+          <li class="nav-item active">
+            <a class="nav-link" th:href="@{/thanh-vien/join-area}"
+              ><i class="fa-solid fa-door-open"></i>Khu vực học tập</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/thanh-vien/all}"
+              ><i class="fa-solid fa-users"></i>Quản lý thành viên</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/muontra}"
+              ><i class="fa-regular fa-handshake"></i>Quản lý mượn trả</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/thietbi}"
+              ><i class="fa-solid fa-desktop"></i>Quản lý thiết bị</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/quanlydatcho}"
+              ><i class="fa-solid fa-bell-concierge"></i>Quản lý đặt chỗ</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/xuly/all}"
+              ><i class="fa-solid fa-triangle-exclamation"></i>Xử lý vi phạm</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" th:href="@{/thong-ke}"
+              ><i class="fa-solid fa-chart-simple"></i>Thống kê</a
+            >
+          </li>
+        </ul>
+        <div style="margin-left: auto; padding: 0 20px; z-index: 10">
+          <a
+            style="color: white; text-decoration: none"
+            onclick="logout()"
+            href="/user/login"
+            >Đăng xuất</a
+          >
+        </div>
+      </div>
+      <script src="/js/navBar.js"></script>
+      <script>
+        function logout() {
+          localStorage.clear();
+        }
+      </script>
+    </nav>
+  </body>
+</html>
